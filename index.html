@@ -3,494 +3,224 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>♥ Heart Animation</title>
+  <title>Heart Animation 💖</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: #0a0a0f;
+      background: radial-gradient(circle at center, #1b0711 0%, #0a0a0f 75%);
       overflow: hidden;
-    }
-
-    /* Subtle animated background gradient */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 50%, rgba(120, 20, 40, 0.15), transparent 70%);
-      animation: bgPulse 4s ease-in-out infinite;
-    }
-
-    @keyframes bgPulse {
-      0%, 100% { opacity: 0.5; transform: scale(1); }
-      50%      { opacity: 1;   transform: scale(1.1); }
+      font-family: system-ui, sans-serif;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: clamp(4px, 1.5vw, 8px);
-      position: relative;
-      z-index: 1;
-      padding: 20px;
+      will-change: transform;
     }
 
     .cell {
-      width: clamp(36px, 10vw, 54px);
-      height: clamp(36px, 10vw, 54px);
+      width: clamp(38px, 10vw, 54px);
+      height: clamp(38px, 10vw, 54px);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: clamp(20px, 6vw, 32px);
-      /* Start invisible and scaled down */
+      font-size: clamp(22px, 6vw, 32px);
       opacity: 0;
       transform: scale(0);
-      /* Smooth transition for the reveal */
-      transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: transform, opacity;
     }
+    .cell.visible { opacity: 1; transform: scale(1); }
 
-    .cell.visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    .cell.heart {
-      color: #ff2d55;
-      text-shadow:
-        0 0  8px rgba(255, 45, 85, 0.8),
-        0 0 20px rgba(255, 45, 85, 0.5),
-        0 0 40px rgba(255, 45, 85, 0.3);
-      filter: brightness(1);
-    }
-
-    /* After all hearts revealed, pulse them together */
+    /* GPU-only heartbeat animation */
     .grid.complete .cell.heart {
-      animation: heartbeat 1.5s ease-in-out infinite;
+      animation: beat 1.4s ease-in-out infinite;
+      animation-delay: calc(var(--i) * 0.05s);
+    }
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      20% { transform: scale(1.22); }
+      40% { transform: scale(0.96); }
+      60% { transform: scale(1.12); }
     }
 
-    @keyframes heartbeat {
-      0%, 100% {
-        transform: scale(1);
-        filter: brightness(1);
-        text-shadow:
-          0 0  8px rgba(255, 45, 85, 0.8),
-          0 0 20px rgba(255, 45, 85, 0.5),
-          0 0 40px rgba(255, 45, 85, 0.3);
-      }
-      15% {
-        transform: scale(1.25);
-        filter: brightness(1.3);
-        text-shadow:
-          0 0 12px rgba(255, 45, 85, 1),
-          0 0 30px rgba(255, 45, 85, 0.7),
-          0 0 60px rgba(255, 45, 85, 0.4);
-      }
-      30% {
-        transform: scale(0.95);
-        filter: brightness(1);
-      }
-      45% {
-        transform: scale(1.15);
-        filter: brightness(1.2);
-        text-shadow:
-          0 0 10px rgba(255, 45, 85, 0.9),
-          0 0 25px rgba(255, 45, 85, 0.6),
-          0 0 50px rgba(255, 45, 85, 0.35);
-      }
-    }
-
-    /* Stagger the heartbeat slightly per cell for a wave effect */
-    .grid.complete .cell.heart {
-      animation-delay: calc(var(--i) * 0.06s);
-    }
-
-    /* Floating particles */
-    .particle {
-      position: fixed;
-      font-size: 14px;
-      color: rgba(255, 45, 85, 0.4);
-      pointer-events: none;
-      z-index: 0;
-      animation: float linear infinite;
-    }
-
-    @keyframes float {
-      0%   { transform: translateY(100vh) rotate(0deg);   opacity: 0; }
-      10%  { opacity: 0.6; }
-      90%  { opacity: 0.6; }
-      100% { transform: translateY(-10vh) rotate(360deg);  opacity: 0; }
-    }
-
-    /* "I Love You" text */
+    /* "I Love You" message */
     .love-text {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) scale(0);
-      z-index: 20;
-      font-family: 'Georgia', 'Times New Roman', serif;
-      font-size: clamp(28px, 8vw, 56px);
-      font-weight: bold;
+      font-size: clamp(28px, 8vw, 52px);
+      font-weight: 800;
       font-style: italic;
       color: #fff;
-      white-space: nowrap;
+      text-shadow: 0 0 16px rgba(255, 45, 85, 0.7);
       pointer-events: none;
       opacity: 0;
-      text-shadow:
-        0 0 10px rgba(255, 45, 85, 0.9),
-        0 0 30px rgba(255, 45, 85, 0.6),
-        0 0 60px rgba(255, 45, 85, 0.4),
-        0 0 100px rgba(255, 45, 85, 0.2);
+      z-index: 10;
+      will-change: transform, opacity;
     }
-
     .love-text.animate {
-      animation: loveAppear 3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: popAndFall 2.8s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+    }
+    @keyframes popAndFall {
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+      18%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+      35%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      60%  { opacity: 1; transform: translate(-50%, -40%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, 90vh) rotate(15deg) scale(0.6); }
     }
 
-    @keyframes loveAppear {
-      /* Burst from center, scale up */
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0) rotate(-5deg);
-      }
-      15% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
-      }
-      /* Hold in place */
-      25% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1) rotate(0deg);
-      }
-      45% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.05) rotate(0deg);
-      }
-      /* Start falling */
-      65% {
-        opacity: 0.8;
-        transform: translate(-50%, 20vh) scale(0.9) rotate(8deg);
-      }
-      /* Accelerate down and fade */
-      100% {
-        opacity: 0;
-        transform: translate(-50%, 120vh) scale(0.5) rotate(25deg);
-      }
+    /* Lightweight Confetti */
+    .confetti {
+      position: fixed;
+      top: -15px;
+      width: 8px;
+      height: 12px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 5;
+      animation: fall 2.2s linear forwards;
+      will-change: transform;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(105vh) rotate(540deg); opacity: 0; }
     }
 
-    /* Replay button */
+    /* Wiggle on shake */
+    .grid.wiggle { animation: shake 0.4s ease-in-out; }
+    @keyframes shake {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.08) rotate(-6deg); }
+      75% { transform: scale(1.08) rotate(6deg); }
+    }
+
+    /* Replay Button */
     .replay-btn {
       position: fixed;
       bottom: clamp(20px, 5vh, 40px);
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      background: transparent;
       border: 1px solid rgba(255, 45, 85, 0.4);
-      color: rgba(255, 45, 85, 0.8);
-      padding: 10px 28px;
-      border-radius: 30px;
-      font-size: 15px;
+      background: rgba(255, 45, 85, 0.08);
+      color: #ff6b8a;
+      padding: 10px 24px;
+      border-radius: 24px;
+      font-size: 14px;
       cursor: pointer;
       opacity: 0;
-      transition: opacity 0.6s ease, background 0.3s ease, border-color 0.3s ease;
-      letter-spacing: 1px;
-      font-family: system-ui, sans-serif;
+      transition: opacity 0.4s ease;
+      z-index: 10;
     }
-
-    .replay-btn.show {
-      opacity: 1;
-    }
-
-    .replay-btn:hover {
-      background: rgba(255, 45, 85, 0.15);
-      border-color: rgba(255, 45, 85, 0.8);
-    }
-
-    /* ── Confetti ── */
-    .confetti-container {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 15;
-      overflow: hidden;
-    }
-
-    .confetti {
-      position: absolute;
-      top: -20px;
-      width: 10px;
-      height: 16px;
-      border-radius: 2px;
-      opacity: 0;
-      animation: confettiFall linear forwards;
-    }
-
-    @keyframes confettiFall {
-      0%   { opacity: 1; transform: translateY(0)    rotate(0deg)   scaleX(1);   }
-      25%  { opacity: 1; transform: translateY(25vh)  rotate(180deg) scaleX(0.4); }
-      50%  { opacity: 1; transform: translateY(50vh)  rotate(360deg) scaleX(1);   }
-      75%  { opacity: 0.7; transform: translateY(75vh) rotate(540deg) scaleX(0.4); }
-      100% { opacity: 0; transform: translateY(105vh) rotate(720deg) scaleX(1);   }
-    }
-
-    /* ── Device motion wiggle ── */
-    .grid.wiggle .cell.heart.visible {
-      animation: wiggle 0.5s ease-in-out;
-    }
-
-    @keyframes wiggle {
-      0%, 100% { transform: scale(1) rotate(0deg); }
-      20%  { transform: scale(1.1) rotate(-12deg); }
-      40%  { transform: scale(1.15) rotate(10deg); }
-      60%  { transform: scale(1.1) rotate(-8deg); }
-      80%  { transform: scale(1.05) rotate(5deg); }
-    }
-
-    /* Tilt response — applied via JS as inline style on .grid */
-    .grid {
-      transition: transform 0.15s ease-out;
-    }
+    .replay-btn.show { opacity: 1; }
   </style>
 </head>
 <body>
 
   <div class="grid" id="grid"></div>
-  <div class="confetti-container" id="confettiContainer"></div>
   <div class="love-text" id="loveText">I Love You 💖</div>
-  <button class="replay-btn" id="replayBtn" onclick="replay()">Replay 💖</button>
+  <button class="replay-btn" id="replayBtn" onclick="play()">Replay 💖</button>
 
   <script>
-    // Heart shape logic — same as the Python version
-    function isHeart(row, col) {
-      return (
-        (row === 0 && col % 3 !== 0) ||
-        (row === 1 && col % 3 === 0) ||
-        (row - col === 2) ||
-        (row + col === 8)
-      );
-    }
-
-    const ROWS = 6;
-    const COLS = 7;
+    const ROWS = 6, COLS = 7;
+    const isHeart = (r, c) => (r === 0 && c % 3 !== 0) || (r === 1 && c % 3 === 0) || (r - c === 2) || (r + c === 8);
     const grid = document.getElementById('grid');
-    const replayBtn = document.getElementById('replayBtn');
     const loveText = document.getElementById('loveText');
-    const confettiContainer = document.getElementById('confettiContainer');
+    const replayBtn = document.getElementById('replayBtn');
     let cells = [];
 
-    // Build the grid
-    function buildGrid() {
+    function build() {
       grid.innerHTML = '';
-      grid.classList.remove('complete');
-      replayBtn.classList.remove('show');
-      loveText.classList.remove('animate');
-      confettiContainer.innerHTML = '';
+      grid.className = 'grid';
+      loveText.className = 'love-text';
+      replayBtn.className = 'replay-btn';
       cells = [];
-      let index = 0;
 
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
-          const cell = document.createElement('div');
-          cell.classList.add('cell');
-          cell.style.setProperty('--i', index);
-
+          const el = document.createElement('div');
+          el.className = 'cell';
+          el.style.setProperty('--i', r * COLS + c);
           if (isHeart(r, c)) {
-            cell.classList.add('heart');
-            cell.textContent = '💖';
+            el.classList.add('heart');
+            el.textContent = '💖';
           }
-
-          grid.appendChild(cell);
-          cells.push(cell);
-          index++;
+          grid.appendChild(el);
+          cells.push(el);
         }
       }
     }
 
-    // Reveal row by row, top to bottom
-    function animateReveal() {
-      const ROW_DELAY = 180;      // ms between each row
-      const CELL_STAGGER = 40;    // ms stagger between cells within a row
-      let currentRow = 0;
-      let lastTime = 0;
-
-      function step(timestamp) {
-        if (!lastTime) lastTime = timestamp;
-
-        if (timestamp - lastTime >= ROW_DELAY) {
-          // Reveal all cells in the current row with a small stagger
-          for (let c = 0; c < COLS; c++) {
-            const cellIndex = currentRow * COLS + c;
-            const delay = c * CELL_STAGGER;
-            setTimeout(() => {
-              cells[cellIndex].classList.add('visible');
-            }, delay);
-          }
-          currentRow++;
-          lastTime = timestamp;
-        }
-
-        if (currentRow < ROWS) {
-          requestAnimationFrame(step);
-        } else {
-          // All revealed — start the heartbeat after last row finishes
-          const lastRowDuration = COLS * CELL_STAGGER;
-          setTimeout(() => {
-            grid.classList.add('complete');
-            replayBtn.classList.add('show');
-            // Launch "I Love You" + confetti after a couple heartbeats
-            setTimeout(() => {
-              loveText.classList.add('animate');
-              launchConfetti();
-            }, 1500);
-          }, lastRowDuration + 400);
-        }
+    function play() {
+      build();
+      // Reveal row-by-row top to bottom
+      for (let r = 0; r < ROWS; r++) {
+        setTimeout(() => {
+          for (let c = 0; c < COLS; c++) cells[r * COLS + c].classList.add('visible');
+        }, r * 150);
       }
 
-      requestAnimationFrame(step);
-    }
-
-    // Floating heart particles in the background
-    function spawnParticles() {
-      const existing = document.querySelectorAll('.particle');
-      existing.forEach(p => p.remove());
-
-      for (let i = 0; i < 15; i++) {
-        const p = document.createElement('div');
-        p.classList.add('particle');
-        p.textContent = '💖';
-        p.style.left = Math.random() * 100 + 'vw';
-        p.style.fontSize = (10 + Math.random() * 16) + 'px';
-        p.style.animationDuration = (6 + Math.random() * 8) + 's';
-        p.style.animationDelay = (Math.random() * 8) + 's';
-        document.body.appendChild(p);
-      }
-    }
-
-    // ── Confetti explosion ──
-    const CONFETTI_COLORS = [
-      '#ff2d55', '#ff6b8a', '#ff9eb5', '#ffffff',
-      '#ffd700', '#ff69b4', '#ff1493', '#ffb6c1'
-    ];
-
-    function launchConfetti() {
-      confettiContainer.innerHTML = '';
-      const count = 80;
-
-      for (let i = 0; i < count; i++) {
-        const piece = document.createElement('div');
-        piece.classList.add('confetti');
-        piece.style.left = Math.random() * 100 + 'vw';
-        piece.style.width = (6 + Math.random() * 8) + 'px';
-        piece.style.height = (8 + Math.random() * 14) + 'px';
-        piece.style.backgroundColor = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-        piece.style.animationDuration = (2 + Math.random() * 2.5) + 's';
-        piece.style.animationDelay = (Math.random() * 0.8) + 's';
-        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-        confettiContainer.appendChild(piece);
-      }
-
-      // Clean up after animation
-      setTimeout(() => { confettiContainer.innerHTML = ''; }, 5500);
-    }
-
-    // ── Device motion: tilt + shake ──
-    let lastShake = 0;
-    let lastAccel = { x: 0, y: 0, z: 0 };
-    const SHAKE_THRESHOLD = 25;
-
-    // Tilt — smoothly shift the grid based on phone orientation
-    function handleOrientation(e) {
-      const gamma = e.gamma || 0;  // left/right tilt (-90 to 90)
-      const beta  = e.beta  || 0;  // front/back tilt (-180 to 180)
-
-      const tiltX = Math.max(-15, Math.min(15, gamma)) / 15;  // normalize to -1..1
-      const tiltY = Math.max(-15, Math.min(15, beta - 45)) / 15;
-
-      const moveX = tiltX * 10;  // max 10px shift
-      const moveY = tiltY * 8;
-      const rotX  = -tiltY * 5;  // subtle 3D tilt
-      const rotY  = tiltX * 5;
-
-      grid.style.transform =
-        `translate(${moveX}px, ${moveY}px) perspective(600px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-    }
-
-    // Shake — detect sharp acceleration and trigger wiggle
-    function handleMotion(e) {
-      const accel = e.accelerationIncludingGravity;
-      if (!accel) return;
-
-      const deltaX = Math.abs(accel.x - lastAccel.x);
-      const deltaY = Math.abs(accel.y - lastAccel.y);
-      const deltaZ = Math.abs(accel.z - lastAccel.z);
-
-      lastAccel = { x: accel.x, y: accel.y, z: accel.z };
-
-      const totalDelta = deltaX + deltaY + deltaZ;
-      const now = Date.now();
-
-      if (totalDelta > SHAKE_THRESHOLD && now - lastShake > 800) {
-        lastShake = now;
-        triggerWiggle();
-      }
-    }
-
-    function triggerWiggle() {
-      grid.classList.remove('complete');  // pause heartbeat briefly
-      grid.classList.add('wiggle');
-
+      // Heartbeat + Confetti + Love message
       setTimeout(() => {
-        grid.classList.remove('wiggle');
-        grid.classList.add('complete');   // resume heartbeat
-      }, 600);
+        grid.classList.add('complete');
+        replayBtn.classList.add('show');
+        setTimeout(() => {
+          loveText.classList.add('animate');
+          spawnConfetti();
+        }, 1200);
+      }, ROWS * 150 + 200);
     }
 
-    // Request permission on iOS 13+ and set up listeners
-    function initDeviceMotion() {
-      if (typeof DeviceOrientationEvent !== 'undefined' &&
-          typeof DeviceOrientationEvent.requestPermission === 'function') {
-        // iOS 13+ — needs user gesture to request permission
-        document.body.addEventListener('click', function requestPerm() {
-          DeviceOrientationEvent.requestPermission()
-            .then(state => {
-              if (state === 'granted') {
-                window.addEventListener('deviceorientation', handleOrientation);
-                window.addEventListener('devicemotion', handleMotion);
-              }
-            })
-            .catch(console.error);
-          document.body.removeEventListener('click', requestPerm);
-        }, { once: true });
-      } else if ('DeviceOrientationEvent' in window) {
-        // Android + other browsers — no permission needed
-        window.addEventListener('deviceorientation', handleOrientation);
-        window.addEventListener('devicemotion', handleMotion);
+    function spawnConfetti() {
+      const colors = ['#ff2d55', '#ff9eb5', '#ffd700', '#ffffff', '#ff69b4'];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti';
+        p.style.left = (Math.random() * 100) + 'vw';
+        p.style.background = colors[i % colors.length];
+        p.style.animationDelay = (Math.random() * 0.4) + 's';
+        p.style.animationDuration = (1.8 + Math.random()) + 's';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 2600);
       }
     }
 
-    function replay() {
-      buildGrid();
-      spawnParticles();
-      // Small delay so the browser can reset styles before animating
-      requestAnimationFrame(() => requestAnimationFrame(() => animateReveal()));
-    }
+    // Smooth Mobile Tilt (throttled with requestAnimationFrame)
+    let tiltX = 0, tiltY = 0, ticking = false;
+    window.addEventListener('deviceorientation', e => {
+      if (e.gamma == null) return;
+      tiltX = Math.max(-12, Math.min(12, e.gamma)) * 0.5;
+      tiltY = Math.max(-12, Math.min(12, (e.beta - 45) || 0)) * 0.5;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          grid.style.transform = `translate3d(${tiltX}px, ${tiltY}px, 0)`;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
 
-    // Initial run
-    buildGrid();
-    spawnParticles();
-    initDeviceMotion();
-    // Start animation after a brief pause so the page settles
-    setTimeout(animateReveal, 300);
+    // Shake detection
+    let lastAccel = 0, lastShake = 0;
+    window.addEventListener('devicemotion', e => {
+      const a = e.accelerationIncludingGravity;
+      if (!a) return;
+      const speed = Math.abs(a.x + a.y + a.z - lastAccel);
+      lastAccel = a.x + a.y + a.z;
+      const now = Date.now();
+      if (speed > 22 && now - lastShake > 900) {
+        lastShake = now;
+        grid.classList.add('wiggle');
+        setTimeout(() => grid.classList.remove('wiggle'), 400);
+      }
+    }, { passive: true });
+
+    // Start
+    play();
   </script>
 </body>
 </html>
