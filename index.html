@@ -101,6 +101,21 @@
       75% { transform: scale(1.08) rotate(6deg); }
     }
 
+    /* Touch/Click Burst */
+    .burst {
+      position: fixed;
+      pointer-events: none;
+      z-index: 20;
+      font-size: clamp(16px, 4.5vw, 22px);
+      animation: popBurst 1s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes popBurst {
+      0%   { transform: translate(0, 0) scale(0.3); opacity: 1; }
+      40%  { transform: translate(var(--tx, 0), -50px) scale(1.2); opacity: 1; }
+      100% { transform: translate(calc(var(--tx, 0) * 1.4), 45px) scale(0.5); opacity: 0; }
+    }
+
     /* Replay Button */
     .replay-btn {
       position: fixed;
@@ -216,6 +231,23 @@
         lastShake = now;
         grid.classList.add('wiggle');
         setTimeout(() => grid.classList.remove('wiggle'), 400);
+      }
+    }, { passive: true });
+
+    // Touch/click burst: pop up mini hearts wherever you touch
+    const burstIcons = ['💖', '✨', '💖', '🌸', '💖'];
+    window.addEventListener('pointerdown', e => {
+      if (e.target === replayBtn) return;
+      for (let i = 0; i < 6; i++) {
+        const b = document.createElement('div');
+        b.className = 'burst';
+        b.textContent = burstIcons[i % burstIcons.length];
+        b.style.left = (e.clientX - 10) + 'px';
+        b.style.top = (e.clientY - 10) + 'px';
+        b.style.setProperty('--tx', (Math.random() * 80 - 40) + 'px');
+        b.style.animationDelay = (Math.random() * 0.08) + 's';
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 1050);
       }
     }, { passive: true });
 
